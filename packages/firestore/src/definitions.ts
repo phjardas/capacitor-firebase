@@ -366,6 +366,25 @@ export interface UseEmulatorOptions {
 }
 
 /**
+ * An options object that can be passed to snapshot listeners to control which
+ * types of changes to include in the result set.
+ *
+ * @since 6.2.0
+ */
+export declare interface SnapshotListenOptions {
+  /**
+   * Include a change even if only the metadata of the query or of a document
+   * changed. Default is false.
+   */
+  readonly includeMetadataChanges?: boolean;
+  /**
+   * Set the source the query listens to. Default to "default", which
+   * listens to both cache and server.
+   */
+  readonly source?: 'default' | 'cache';
+}
+
+/**
  * @since 5.2.0
  */
 export interface AddDocumentSnapshotListenerOptions {
@@ -375,6 +394,12 @@ export interface AddDocumentSnapshotListenerOptions {
    * @since 5.2.0
    */
   reference: string;
+  /**
+   * Additional options to configure the listen behavior.
+   *
+   * @since 6.2.0
+   */
+  options?: SnapshotListenOptions;
 }
 
 /**
@@ -412,6 +437,12 @@ export interface AddCollectionSnapshotListenerOptions {
    * @since 5.2.0
    */
   queryConstraints?: QueryNonFilterConstraint[];
+  /**
+   * Additional options to configure the listen behavior.
+   *
+   * @since 6.2.0
+   */
+  options?: SnapshotListenOptions;
 }
 
 /**
@@ -450,6 +481,12 @@ export interface AddCollectionGroupSnapshotListenerOptions {
    * @since 6.1.0
    */
   queryConstraints?: QueryNonFilterConstraint[];
+  /**
+   * Additional options to configure the listen behavior.
+   *
+   * @since 6.2.0
+   */
+  options?: SnapshotListenOptions;
 }
 
 /**
@@ -502,6 +539,29 @@ export interface DocumentReference {
 }
 
 /**
+ * @since 6.2.0
+ */
+export interface DocumentMetadata {
+  /**
+   * True if the snapshot contains the result of local writes (for example
+   * `set()` or `update()` calls) that have not yet been committed to the
+   * backend. If your listener has opted into metadata updates (via
+   * `SnapshotListenOptions`) you will receive another snapshot with
+   * `hasPendingWrites` equal to false once the writes have been committed to
+   * the backend.
+   */
+  readonly hasPendingWrites: boolean;
+  /**
+   * True if the snapshot was created from cached data rather than guaranteed
+   * up-to-date server data. If your listener has opted into metadata updates
+   * (via `SnapshotListenOptions`) you will receive another snapshot with
+   * `fromCache` set to false once the client has received up-to-date data from
+   * the backend.
+   */
+  readonly fromCache: boolean;
+}
+
+/**
  * @since 5.2.0
  */
 export interface DocumentSnapshot<T> {
@@ -525,6 +585,12 @@ export interface DocumentSnapshot<T> {
    * @since 5.2.0
    */
   data: T | null;
+  /**
+   * The metadata for the document.
+   *
+   * @since 6.2.0
+   */
+  metadata: DocumentMetadata;
 }
 
 /**

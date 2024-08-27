@@ -113,6 +113,7 @@ export class FirebaseFirestoreWeb
         data: (documentSnapshotData === undefined
           ? null
           : documentSnapshotData) as T | null,
+        metadata: documentSnapshot.metadata,
       },
     };
   }
@@ -167,6 +168,7 @@ export class FirebaseFirestoreWeb
         id: documentSnapshot.id,
         path: documentSnapshot.ref.path,
         data: documentSnapshot.data() as T,
+        metadata: documentSnapshot.metadata,
       })),
     };
   }
@@ -184,6 +186,7 @@ export class FirebaseFirestoreWeb
         id: documentSnapshot.id,
         path: documentSnapshot.ref.path,
         data: documentSnapshot.data() as T,
+        metadata: documentSnapshot.metadata,
       })),
     };
   }
@@ -218,6 +221,7 @@ export class FirebaseFirestoreWeb
     const firestore = getFirestore();
     const unsubscribe = onSnapshot(
       doc(firestore, options.reference),
+      options.options ?? {},
       snapshot => {
         const data = snapshot.data();
         const event: AddDocumentSnapshotListenerCallbackEvent<T> = {
@@ -225,6 +229,7 @@ export class FirebaseFirestoreWeb
             id: snapshot.id,
             path: snapshot.ref.path,
             data: (data === undefined ? null : data) as T | null,
+            metadata: snapshot.metadata,
           },
         };
         callback(event, undefined);
@@ -248,12 +253,14 @@ export class FirebaseFirestoreWeb
     );
     const unsubscribe = onSnapshot(
       collectionQuery,
+      options.options ?? {},
       snapshot => {
         const event: AddCollectionSnapshotListenerCallbackEvent<T> = {
           snapshots: snapshot.docs.map(documentSnapshot => ({
             id: documentSnapshot.id,
             path: documentSnapshot.ref.path,
             data: documentSnapshot.data() as T,
+            metadata: documentSnapshot.metadata,
           })),
         };
         callback(event, undefined);
@@ -277,12 +284,14 @@ export class FirebaseFirestoreWeb
     );
     const unsubscribe = onSnapshot(
       collectionQuery,
+      options.options ?? {},
       snapshot => {
         const event: AddCollectionSnapshotListenerCallbackEvent<T> = {
           snapshots: snapshot.docs.map(documentSnapshot => ({
             id: documentSnapshot.id,
             path: documentSnapshot.ref.path,
             data: documentSnapshot.data() as T,
+            metadata: snapshot.metadata,
           })),
         };
         callback(event, undefined);
